@@ -50,6 +50,14 @@ public class Zip extends CordovaPlugin {
         return a | b << 8 | c << 16 | d << 24;
     }
 
+    private void ensureZipPathSafety(final File outputFile, final String destDirectory) throws Exception {
+        String destDirCanonicalPath = (new File(destDirectory)).getCanonicalPath();
+        String outputFilecanonicalPath = outputFile.getCanonicalPath();
+        if (!outputFileCanonicalPath.startsWith(destDirCanonicalPath)) {
+            throw new Exception(String.format("Found Zip Path Traversal Vulnerability with %s", canonicalPath));
+        }
+    }
+
     private void unzipSync(CordovaArgs args, CallbackContext callbackContext) {
         InputStream inputStream = null;
         try {
@@ -123,9 +131,11 @@ public class Zip extends CordovaPlugin {
 
                 if (ze.isDirectory()) {
                    File dir = new File(outputDirectory + compressedName);
+                   ensureZipPathSafety( dir, outputDirectory );
                    dir.mkdirs();
                 } else {
                     File file = new File(outputDirectory + compressedName);
+                    ensureZipPathSafety( file, outputDirectory );
                     file.getParentFile().mkdirs();
                     if(file.exists() || file.createNewFile()){
                         Log.w("Zip", "extracting: " + file.getPath());
