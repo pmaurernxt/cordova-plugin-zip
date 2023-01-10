@@ -52,9 +52,9 @@ public class Zip extends CordovaPlugin {
 
     private void ensureZipPathSafety(final File outputFile, final String destDirectory) throws Exception {
         String destDirCanonicalPath = (new File(destDirectory)).getCanonicalPath();
-        String outputFilecanonicalPath = outputFile.getCanonicalPath();
+        String outputFileCanonicalPath = outputFile.getCanonicalPath();
         if (!outputFileCanonicalPath.startsWith(destDirCanonicalPath)) {
-            throw new Exception(String.format("Found Zip Path Traversal Vulnerability with %s", canonicalPath));
+            throw new Exception(String.format("Found Zip Path Traversal Vulnerability with %s", outputFileCanonicalPath));
         }
     }
 
